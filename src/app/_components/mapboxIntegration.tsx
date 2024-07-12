@@ -10,19 +10,30 @@ import Papa from 'papaparse'
 import {Map, NavigationControl, useControl, Layer} from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-const TOKEN = 'pk.eyJ1IjoienVrYXppbmUiLCJhIjoiY2x3ZzZhZnBlMDFqczJqbzc4cWRoa3huMCJ9.NMAXOL6N04GuU6zcwz77Hw'
+const TOKEN = 'YOUR_MAPBOX_TOKEN'
 const MAP_STYLE = 'mapbox://styles/mapbox/light-v9'
 const DATA_URL = 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/safegraph/sf-pois.csv'
+
 
 const colorScale = scaleLog()
   .domain([10, 100, 1000, 10000])
   // @ts-ignore
   .range([
     [255, 255, 178],
-    [254, 204, 92],
-    [253, 141, 60],
-    [227, 26, 28]
+    [255, 204, 92],
+    [255, 150, 45],
+    [255, 100, 20]
   ]);
+
+const colorScaleTwo = scaleLog()
+.domain([10, 100, 1000, 10000])
+// @ts-ignore
+.range([
+  [0, 0, 0],
+  [255, 125, 50],
+  [255, 50, 10],
+  [255, 25, 10]
+]);
 
 const buildings3DLayer = {
   id: '3d-buildings',
@@ -45,7 +56,7 @@ function DeckGLOverlay(props) {
 }
 
 // @ts-ignore
-const MapboxIntegration = () => {
+const MapboxIntegration = ({clicked}) => {
   const [selectedPOI, setSelectedPOI] = useState('8a283082aa17fff');
   const [firstLabelLayerId, setFirstLabelLayerId] = useState();
   const [data, setData] = useState()
@@ -124,7 +135,7 @@ const MapboxIntegration = () => {
     onClick: ({object}) => object && setSelectedPOI(object.hex),
     getHexagon: d => d.hex,
 		// @ts-ignore
-    getFillColor: d => colorScale(d.count),
+    getFillColor: d => clicked ? colorScale(d.count) : colorScaleTwo(d.count),
     extruded: false,
     stroked: false,
     beforeId: firstLabelLayerId
